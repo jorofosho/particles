@@ -25,10 +25,10 @@ public:
 class World {
 
 private:
-    std::vector<Particle> particles;
+    std::vector<Particle *> particles;
 
 public:
-    void add_particle(const Particle& p);
+    void add_particle(Particle *p);
 
     void apply_gravity(void);
 

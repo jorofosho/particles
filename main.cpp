@@ -9,12 +9,14 @@ main ()
 {
     double duration = 0.0;
     World world;
+    Particle p1(1, 2, 3);
+    Particle p2(2, 10, -10);
 
     std::cout << "How long shall this run for in seconds?";
     std::cin >> duration;
  
-    world.add_particle(Particle(1, 2, 3));
-    world.add_particle(Particle(2, 10, -10));
+    world.add_particle(&p1);
+    world.add_particle(&p2);
 
     world.simulate(duration);
 

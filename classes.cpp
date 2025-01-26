@@ -14,7 +14,7 @@
  *
  * The gravitational constant
  */
-const double G = 6.67430 * std::pow(10, -11);
+const double G = 6.67430 * std::pow(10, 0);
 const double TIME_STEP = 0.001;
 
 
@@ -48,8 +48,7 @@ void Particle::update(double dt)
     // Update position
     x += vx * dt + 0.5 * ax * dt * dt;
     y += vy * dt + 0.5 * ay * dt * dt;
-    std::cout << "Updating position";
-    std::cout << x << ", " << y;
+
     // Update velocity
     vx += ax * dt;
     vy += ay * dt;
@@ -61,7 +60,7 @@ void Particle::update(double dt)
  *
  * Adds a particle to the world.
  */
-void World:: add_particle (const Particle& p)
+void World:: add_particle (Particle *p)
 {
     particles.push_back(p);
 }
@@ -78,13 +77,11 @@ void World:: apply_gravity (void)
      * For each particle, its acceleration is modified by the mass of all
      * the other particles in the world.
      */
-    for (auto& p : particles) {
-        for (auto& p_other : particles) {
-            if (&p != &p_other) {
-//                std::cout << "Updating acceleration";
-                p.ax -= (G * p_other.mass) / std::pow((p.x - p_other.x), 2);
-                p.ay -= (G * p_other.mass) / std::pow((p.y - p_other.y), 2);
-               // std::cout << p.ax << ", " << p.ay;
+    for (auto p : particles) {
+        for (auto p_other : particles) {
+            if (p != p_other) {
+                p->ax -= (G * p_other->mass) / std::pow((p->x - p_other->x), 2);
+                p->ay -= (G * p_other->mass) / std::pow((p->y - p_other->y), 2);
             }
         }
     }
@@ -102,8 +99,8 @@ void World:: apply_gravity (void)
  */
 void World:: update_particles (double dt)
 {
-    for (auto& p : particles) {
-        p.update(dt);
+    for (auto p : particles) {
+        p->update(dt);
     }
 }
 
@@ -114,8 +111,8 @@ void World:: update_particles (double dt)
  * Display all the particles in the world
  */
 void World::show_particles(void) const {
-    for (const auto& p : particles) {
-        std::cout << "Particle at (" << p.x << ", " << p.y << ")\n";
+    for (auto p : particles) {
+        std::cout << "Particle at (" << p->x << ", " << p->y << ")\n";
     }
     std::cout << "====================\n";
 }
@@ -143,8 +140,8 @@ void World::simulate (double run_time)
      *
      * Repeat until we've run for the alloted time.
      */
-    for (auto& p: particles) {
-        std::cout << "Start position: " << p.x << ", " << p.y;
+    for (auto p: particles) {
+        std::cout << "Start position: " << p->x << ", " << p->y;
     }
     while (time_elapsed < run_time) {
         apply_gravity();
