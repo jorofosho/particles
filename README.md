@@ -20,3 +20,10 @@ I want to use and practise:
 - Passing by reference
 - Vectors
 - Multithreading
+
+
+## Instructions
+To build and run:
+- g++ -c main.cpp classes.cpp
+- g++ -o main.exe main.o classes.o
+- ./main.exe

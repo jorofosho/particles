@@ -1,0 +1,6 @@
+*.o
+.vscode/
+*.exe
+*.gch
+include_directories(.)
+build/

@@ -7,6 +7,8 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <SDL.h>
+
 #include "classes.h"
 
 /*
