@@ -25,3 +25,5 @@ list(APPEND LIBS SDL3::SDL3)
 add_executable(${PROJECT_NAME} src/main.cpp src/classes.cpp)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBS})
+
+set(ENV{DISPLAY} :0.0)
