@@ -16,7 +16,7 @@
  *
  * The gravitational constant
  */
-const double G = 6.67430 * std::pow(10, 0);
+const double G = 1;
 const double TIME_STEP = 0.001;
 
 
@@ -79,11 +79,14 @@ void World:: apply_gravity (void)
      * For each particle, its acceleration is modified by the mass of all
      * the other particles in the world.
      */
+    double distance = 0.0;
+
     for (auto p : particles) {
         for (auto p_other : particles) {
             if (p != p_other) {
-                p->ax -= (G * p_other->mass) / std::pow((p->x - p_other->x), 2);
-                p->ay -= (G * p_other->mass) / std::pow((p->y - p_other->y), 2);
+                distance = std::sqrt(std::pow((p->x - p_other->x), 2) + std::pow((p->y - p_other->y), 2));
+                p->ax = -((G * p_other->mass) / std::pow(distance, 3)) * (p->x - p_other->x);
+                p->ay = -((G * p_other->mass) / std::pow(distance, 3)) * (p->y - p_other->y);
             }
         }
     }
@@ -116,10 +119,9 @@ void World::show_particles(sf::RenderWindow *window) const {
     sf::VertexArray points(sf::PrimitiveType::Points, 2);
     int i = 0;
 
-    window->clear();
+    //window->clear();
 
     for (auto p: particles) {
-        std::cout << "Particle " << i << " at (" << p->x << ", " << p->y << ")\n";
         points[i].position = sf::Vector2f(p->x, p->y);
         i++;
     }
@@ -139,12 +141,9 @@ void World::show_particles(sf::RenderWindow *window) const {
  */
 int World::simulate (double run_time)
 {
-    double       time_elapsed = 0.0;
-
-    sf::RenderWindow window(sf::VideoMode({200, 200}), "SFML works!");
-    sf::CircleShape shape(100.f);
-    sf::Event event;
-    shape.setFillColor(sf::Color::Green);
+    double           time_elapsed = 0.0;
+    sf::RenderWindow window(sf::VideoMode({1000, 1000}), "SFML works!");
+    sf::Event        event;
 
     /*
      * For each time step:
@@ -167,8 +166,6 @@ int World::simulate (double run_time)
         time_elapsed += TIME_STEP;
         show_particles(&window);
     }
-
-
 
     return 0;
 }
