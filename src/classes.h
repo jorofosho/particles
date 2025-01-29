@@ -5,6 +5,7 @@
  */
 
 #include <vector>
+#include <SFML/Graphics.hpp>
 
 #ifndef CLASSES_H
 #define CLASSES_H
@@ -34,7 +35,7 @@ public:
 
     void update_particles(double dt);
 
-    void show_particles(void) const;
+    void show_particles(sf::RenderWindow *window) const;
 
     int simulate(double run_time);
 };

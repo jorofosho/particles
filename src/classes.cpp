@@ -7,7 +7,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
-#include <SDL3/SDL.h>
+#include <SFML/Graphics.hpp>
 
 #include "classes.h"
 
@@ -112,11 +112,20 @@ void World:: update_particles (double dt)
  *
  * Display all the particles in the world
  */
-void World::show_particles(void) const {
-    for (auto p : particles) {
-        std::cout << "Particle at (" << p->x << ", " << p->y << ")\n";
+void World::show_particles(sf::RenderWindow *window) const {
+    sf::VertexArray points(sf::PrimitiveType::Points, 2);
+    int i = 0;
+
+    window->clear();
+
+    for (auto p: particles) {
+        std::cout << "Particle " << i << " at (" << p->x << ", " << p->y << ")\n";
+        points[i].position = sf::Vector2f(p->x, p->y);
+        i++;
     }
-    std::cout << "====================\n";
+
+    window->draw(points);
+    window->display();
 }
 
 
@@ -131,15 +140,11 @@ void World::show_particles(void) const {
 int World::simulate (double run_time)
 {
     double       time_elapsed = 0.0;
-	SDL_Surface *winSurface   = NULL; // Pointers to our surface
-	SDL_Window  *window       = NULL; // Pointers to our window
-    int          rv           = 0;
 
-	// Initialize SDL. SDL_Init will return -1 if it fails.
-	if (!SDL_Init(SDL_INIT_VIDEO)) {
-		std::cout << "Error initializing SDL: " << SDL_GetError() << std::endl;
-		rv = 1;
-	} 
+    sf::RenderWindow window(sf::VideoMode({200, 200}), "SFML works!");
+    sf::CircleShape shape(100.f);
+    sf::Event event;
+    shape.setFillColor(sf::Color::Green);
 
     /*
      * For each time step:
@@ -151,44 +156,19 @@ int World::simulate (double run_time)
      *
      * Repeat until we've run for the alloted time.
      */
-
-    if (rv == 0) {
-        window = SDL_CreateWindow("my window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOW_OPENGL);
-        if (window == NULL) {
-            std::cout << "Error creating window: " << SDL_GetError() << std::endl;
-            rv = 1;
+    while (time_elapsed < run_time && window.isOpen()) {
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed) {
+                window.close();
+            }
         }
-    }
-
-    if (rv == 0) {
-        winSurface = SDL_GetWindowSurface(window);
-        if (winSurface == NULL) {
-            std::cout << "Error getting window surface: " << SDL_GetError() << std::endl;
-            rv = 1;
-        }
-    }
-
-    if (rv == 0) {
-        SDL_FillSurfaceRect(winSurface, NULL, 1);
-        SDL_UpdateWindowSurface(window);
-    }
-
-    while (rv == 0 && time_elapsed < run_time) {
         apply_gravity();
         update_particles(TIME_STEP);
         time_elapsed += TIME_STEP;
-        show_particles();
+        show_particles(&window);
     }
 
-    SDL_Log("Simulation complete");
 
-    if (rv == 0) {
-        SDL_DestroyWindow(window);
-        window = NULL;
-        winSurface = NULL;
-    }
 
-    SDL_Quit();
-
-    return rv;
+    return 0;
 }
